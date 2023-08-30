@@ -111,15 +111,25 @@ map <- leaflet(options = leafletOptions(maxZoom = 22)) %>%
     overlayGroups = c("Trees", "samples", "Lim. Amm. Paulilatino", "Outbreaks"),
   # Add the new group
     options = layersControlOptions(collapsed = TRUE)
-  )
+  ) 
+
+# Add the geolocation control
+map <- activateGPS(map) %>%  
+
+addControlGPS(
+options= gpsOptions(
+  position="topleft",
+  autoCenter=TRUE,
+))
+
 
 map
 ```
 
 ```{r, include = FALSE}
-library(htmlwidgets)
-
-# Salva la mappa
-saveWidget(map, file = "G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/PROGETTI_GItHub_PAULILATINO/PLOTS_PAULILATINO/map2.html", selfcontained = FALSE)
+# library(htmlwidgets)
+# 
+# # Salva la mappa
+# saveWidget(map, file = "G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/PROGETTI_GItHub_PAULILATINO/PLOTS_PAULILATINO/map2.html", selfcontained = FALSE)
 ```
 
