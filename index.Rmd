@@ -1,0 +1,125 @@
+---
+title: "Mappa dei plots sperientali di Paulilatino"
+output: html_document
+date: "2023-08-30"
+---
+
+In questa mappa sono localizzati gli alberi ricadenti all'interno dei plot di Paulilatino. Sono colorati in base al trattamento che verrà effettuato.
+
+```{r, include = FALSE}
+library(sf)
+library(leaflet)
+library(leaflet.extras)
+library(leaflet.extras2)
+library(leaflet.providers)
+```
+
+```{r, include = FALSE}
+data <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/QFIELD/Piante_ADS_OLIVASTRO.gpkg")
+
+data1 <- st_cast(data, "POINT")
+
+data_4326 <- st_transform(data1, 4326)
+
+dir.create("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/PROGETTI_GItHub_PAULILATINO/PLOTS_PAULILATINO", recursive = TRUE)
+
+```
+
+```{r, include = FALSE}
+lim_paul_wgs84 <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/VETTORIALI/Limite_Amministrativo_Paulilatino_wgs84.shp")
+
+focolai_wgs84 <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/REGRESSIONE/VETTORIALI/FOCOLAI_wgs84.shp")
+
+# Carico il file della geolocalizzazione dei campioni
+samples <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/REGRESSIONE/VETTORIALI/sample_points.shp")
+```
+
+```{r, include = FALSE, message=FALSE, warning=FALSE}
+# Define a custom color palette for classes
+class_palette <- c("Kalex" = "#00ff00",  
+                   "Kalex evo" = "red", 
+                   "Aliette" = "yellow",
+                   "Controllo" = "yellow",
+                   "Endoterapia - Kalex" = "#00ff00",
+                   "Ridomil" = "blue",
+                   "Farina di Basalto + effetto scudo" = "yellow",
+                   "Kalex evo - endoterapia" = "orange")
+
+# Create a color factor with the custom palette and class labels
+color_factor <- leaflet::colorFactor(palette = class_palette, levels = c("Kalex", "Kalex evo", "Aliette", "Controllo", "Endoterapia - Kalex", "Ridomil", "Farina di Basalto + effetto scudo", "Kalex evo - endoterapia"))
+
+# Definisci l'ordine desiderato delle etichette delle classi
+custom_order <- c("Kalex", "Kalex evo", "Aliette", "Controllo", "Endoterapia - Kalex", "Ridomil", "Farina di Basalto + effetto scudo", "Kalex evo - endoterapia")
+
+# Crea una funzione di colorazione per i cerchi
+color_factor_circle <- colorFactor(
+  palette = c("green", "red"), 
+  domain = c("+", "-")
+)
+```
+
+
+
+```{r, echo = FALSE}
+# Crea la mappa Leaflet
+map <- leaflet(options = leafletOptions(maxZoom = 22)) %>%
+  addProviderTiles("Esri.WorldImagery", options = providerTileOptions(maxNativeZoom = 18)) %>%
+  addPolygons(data = lim_paul_wgs84, 
+              fillOpacity = 0, 
+              color = "black", 
+              weight = 2,
+              group = 'Lim. Amm. Paulilatino'  # Add a group name
+  ) %>% 
+  addPolygons(data = focolai_wgs84,
+              fillOpacity = 0, 
+              color = "red", 
+              weight = 2,
+              group = 'Outbreaks'
+  ) %>% 
+  addCircleMarkers(data = samples,
+                   lng = ~long,
+                   lat = ~lat,
+                   fillColor = ~color_factor_circle(samples$positivo),
+                   fillOpacity = 0.6,
+                   popup = ~paste("AREA:", location, "<br/>CAMPIONE:", id_sample, "<br/>SINTOMATICO:", sin_asin, "<br/>POSITIVITÀ:", positivo),
+                   radius = 3,
+                   group = 'samples',
+                   stroke = FALSE
+  ) %>%
+  addLegend(pal = color_factor_circle,
+            values = samples$positivo,
+            title = "Sample Positivity",
+            opacity = 0.6,
+            position = "bottomright"
+  ) %>%
+  addCircleMarkers(data = data_4326,
+              fillColor = ~color_factor(Trattament),
+              fillOpacity = 0.6,
+              popup = ~paste("Area:", Area, "<br/>Trattamento :",  Trattament, "<br/>Numero:", Numero),
+              group = 'Trees',
+              stroke = TRUE,
+              weight = 1
+  ) %>%
+  addLegend(pal = color_factor,
+            values = data$Trattament,
+            title = "Trattamenti",
+            opacity = 0.6,
+            position = "topright"
+  ) %>%
+  addFullscreenControl() %>%
+  addLayersControl(
+    overlayGroups = c("Trees", "samples", "Lim. Amm. Paulilatino", "Outbreaks"),
+  # Add the new group
+    options = layersControlOptions(collapsed = TRUE)
+  )
+
+map
+```
+
+```{r, include = FALSE}
+library(htmlwidgets)
+
+# Salva la mappa
+saveWidget(map, file = "G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/PROGETTI_GItHub_PAULILATINO/PLOTS_PAULILATINO/map2.html", selfcontained = FALSE)
+```
+
