@@ -39,10 +39,10 @@ samples <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVAST
 class_palette <- c("Kalex" = "#00ff00",  
                    "Kalex evo" = "red", 
                    "Aliette" = "yellow",
-                   "Controllo" = "yellow",
-                   "Endoterapia - Kalex" = "#00ff00",
+                   "Controllo" = "#d2691e",
+                   "Endoterapia - Kalex" = "#daa520",
                    "Ridomil" = "blue",
-                   "Farina di Basalto + effetto scudo" = "yellow",
+                   "Farina di Basalto + effetto scudo" = "#adff2f",
                    "Kalex evo - endoterapia" = "orange")
 
 # Create a color factor with the custom palette and class labels
