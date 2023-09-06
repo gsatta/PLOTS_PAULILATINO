@@ -1,5 +1,5 @@
 ---
-title: "Mappa dei plots sperientali di Paulilatino"
+title: "Mappa dei plots sperimentali di Paulilatino"
 output: html_document
 date: "2023-08-30"
 ---
@@ -15,7 +15,7 @@ library(leaflet.providers)
 ```
 
 ```{r, include = FALSE}
-data <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/QFIELD/Piante_ADS_OLIVASTRO.gpkg")
+data <- st_read("G:/Altri computer/Il_mio_computer/DOTTORATO/PROGETTI/OLIVASTRO_PAULILATINO/QFIELD/PAULILATINO_QFIELD/Piante_ADS_OLIVASTRO.gpkg")
 
 data1 <- st_cast(data, "POINT")
 
